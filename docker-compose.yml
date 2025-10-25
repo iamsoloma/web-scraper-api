@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  web-scraper-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DISPLAY=:99
