@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/chromedp/chromedp"
 )
@@ -28,15 +27,14 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	fmt.Printf("Сервер запущен на порту %s
-", port)
+	fmt.Printf("Server is started on %s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Query().Get("url")
 	if url == "" {
-		http.Error(w, "Параметр url обязателен", http.StatusBadRequest)
+		http.Error(w, "URL is required", http.StatusBadRequest)
 		return
 	}
 
@@ -46,7 +44,6 @@ func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("disable-dev-shm-usage", true),
-		chromedp.ExecPath("/usr/bin/chromium-browser"),
 	)
 
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
@@ -57,8 +54,8 @@ func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Устанавливаем таймаут
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
+	//ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	//defer cancel()
 
 	var title, text string
 	var screenshot []byte
@@ -70,13 +67,13 @@ func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 		chromedp.WaitVisible("body", chromedp.ByQuery),
 		chromedp.Title(&title),
 		chromedp.Text("body", &text, chromedp.ByQuery),
-		chromedp.Screenshot("body", &screenshot, chromedp.ByQuery),
+		chromedp.FullScreenshot(&screenshot, 100),
 		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('img')).map(img => img.src)`, &imageSrcs),
 		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('a[href]')).map(a => a.href)`, &linkHrefs),
 	)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Ошибка при скрапинге: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Scraping: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -88,6 +85,16 @@ func scrapeHandler(w http.ResponseWriter, r *http.Request) {
 		Links:      linkHrefs,
 	}
 
+	fmt.Println(text)
+	err = os.WriteFile("screen.png", screenshot, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
 }

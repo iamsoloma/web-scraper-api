@@ -17,7 +17,7 @@ Web Scraper API на Golang с использованием chromedp для из
 2. Установите Google Chrome или Chromium
 3. Клонируйте репозиторий:
    ```
-   git clone https://github.com/egorsolomahin1/web-scraper-api.git
+   git clone https://sourcecraft.dev/egorsolomahin1/web-scraper-api.git
    cd web-scraper-api
    ```
 4. Установите зависимости:
@@ -29,7 +29,7 @@ Web Scraper API на Golang с использованием chromedp для из
 
 ### Локальный запуск
 ```
-go run server.go
+go run main.go
 ```
 
 Сервер будет доступен по адресу `http://localhost:8080`
@@ -38,11 +38,6 @@ go run server.go
 ```
 docker build -t web-scraper-api .
 docker run -p 8080:8080 web-scraper-api
-```
-
-### Запуск через docker-compose
-```
-docker-compose up
 ```
 
 ## Использование
