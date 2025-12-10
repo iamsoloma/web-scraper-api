@@ -13,7 +13,7 @@ func main() {
 	}
 
 	server, err := api.NewServer(api.Config{
-		ListenAddr: port,
+		ListenAddr: "0.0.0.0:"+port,
 	})
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
