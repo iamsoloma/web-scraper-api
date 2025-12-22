@@ -68,7 +68,7 @@ func (s_ *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 		chromedp.Title(&title),
 		chromedp.OuterHTML("html", &html, chromedp.ByQueryAll),
 		chromedp.Text("body", &text, chromedp.ByQuery),
-		//chromedp.FullScreenshot(&screenshot, 100),
+		chromedp.FullScreenshot(&screenshot, 100),
 		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('img')).map(img => img.src)`, &imageSrcs),
 		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('a[href]')).map(a => a.href)`, &linkHrefs),
 	)

@@ -11,6 +11,7 @@ import (
 type LogMessage struct {
 	Method  string `json:"method"`
 	Path    string `json:"path"`
+	Query string `json:"query"`
 	Latency string `json:"latency"`
 }
 
@@ -21,7 +22,7 @@ type LoggerMiddleware struct {
 func (l *LoggerMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	l.handler.ServeHTTP(w, r)
-	jsonMessage, err := json.Marshal(LogMessage{Method: r.Method, Path: r.URL.Path, Latency: time.Since(start).String()})
+	jsonMessage, err := json.Marshal(LogMessage{Method: r.Method, Path: r.URL.Path, Query: r.URL.RawQuery, Latency: time.Since(start).String()})
 	if err != nil {
 		log.Println("Error marshaling log message:", err)
 		return
