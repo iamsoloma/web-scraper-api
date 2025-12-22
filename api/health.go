@@ -19,7 +19,7 @@ func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
 		Status:      "Ok",
 		CurrentTime: time.Now().UTC().String(),
 		Uptime:      time.Since(s.Started).String(),
-		Version:     "0.0.1",
+		Version:     "0.0.3",
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
