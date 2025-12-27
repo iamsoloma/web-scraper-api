@@ -19,7 +19,7 @@ func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
 		Status:      "Ok",
 		CurrentTime: time.Now().UTC().String(),
 		Uptime:      time.Since(s.Started).String(),
-		Version:     "0.0.3",
+		Version:     "0.0.4",
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -28,5 +28,4 @@ func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResp)
-	return
 }
