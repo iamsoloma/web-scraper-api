@@ -21,13 +21,13 @@ import (
 )
 
 type ScraperResponse struct {
-	Title      string   `json:"title"`
-	Screenshot string   `json:"screenshot"`
-	HTML       string   `json:"html"`
-	Markdown   string   `json:"markdown"`
-	Text       string   `json:"text"`
-	Images     []string `json:"images"`
-	Links      []string `json:"links"`
+	Title      string            `json:"title"`
+	Screenshot string            `json:"screenshot"`
+	HTML       string            `json:"html"`
+	Markdown   string            `json:"markdown"`
+	Text       string            `json:"text"`
+	Images     map[string]string `json:"images"`
+	Links      map[string]string `json:"links"`
 }
 
 func (s_ *Server) Scrape(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +65,8 @@ func (s_ *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 
 	var title, html, text string
 	var screenshot []byte
-	var imageSrcs, linkHrefs []string
+	var imageMap map[string]string
+	var linkMap map[string]string
 
 	// Выполняем задачи в браузере
 	err = chromedp.Run(ctx,
@@ -74,10 +75,35 @@ func (s_ *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 		chromedp.Title(&title),
 		chromedp.OuterHTML("html", &html, chromedp.ByQueryAll),
 		chromedp.Text("body", &text, chromedp.ByQuery),
-		// небольшой сон, чтобы дать странице подгрузиться JS/ресурсы и ленивую загрузку
-		//chromedp.Sleep(500*time.Millisecond),
-		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('img')).map(img => img.src)`, &imageSrcs),
-		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('a[href]')).map(a => a.href)`, &linkHrefs),
+		chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('img')).reduce((m, img) => {
+			try {
+				const src = img.src || '';
+				const name = (img.alt || img.title || (new URL(src, location.href).pathname.split('/').pop()) || src).toString().trim();
+				const key = name || src;
+				m[key] = src;
+			} catch (e) {
+				// ignore
+			}
+			return m;
+		}, {})`, &imageMap),
+		chromedp.EvaluateAsDevTools(`(function(){
+			const m = {};
+			const curr = new URL(location.href);
+			Array.from(document.querySelectorAll('a[href]')).forEach(a => {
+				try {
+					const href = a.href || '';
+					const resolved = new URL(href, location.href);
+					// исключаем ссылки, ведущие на ту же страницу (игнорируем фрагмент)
+					if (resolved.href.split('#')[0] === curr.href.split('#')[0]) return;
+					const name = (a.textContent || a.getAttribute('title') || href).toString().trim();
+					const key = name || href;
+					if (!(key in m)) m[key] = resolved.href;
+				} catch (e) {
+					// ignore malformed URLs
+				}
+			});
+			return m;
+		})()`, &linkMap),
 	)
 
 	if err != nil {
@@ -109,8 +135,8 @@ func (s_ *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 		HTML:       sanitizedHTML,
 		Markdown:   markdown,
 		Text:       text,
-		Images:     imageSrcs,
-		Links:      linkHrefs,
+		Images:     imageMap,
+		Links:      linkMap,
 	}
 
 	/*err = os.WriteFile("md.txt", []byte(markdown), 0666)
