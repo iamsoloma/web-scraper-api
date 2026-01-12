@@ -10,7 +10,8 @@ type Health struct {
 	Status      string `json:"Status"`
 	CurrentTime string `json:"CurrentTime"`
 	Uptime      string `json:"Uptime"`
-	Version     string `json:"BackendVersion"`
+	Version     string `json:"Version"`
+	UserAgent   string `json:"UserAgent"`
 }
 
 func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +20,8 @@ func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
 		Status:      "Ok",
 		CurrentTime: time.Now().UTC().String(),
 		Uptime:      time.Since(s.Started).String(),
-		Version:     "0.0.5",
+		Version:     s.Version,
+		UserAgent:   s.Config.UserAgent,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

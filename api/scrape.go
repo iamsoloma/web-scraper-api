@@ -15,7 +15,7 @@ func (s *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scrapeResp, err := scrape.Scrape(scrapeReq)
+	scrapeResp, err := scrape.Scrape(scrapeReq, s.Config.UserAgent)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Scraping: %v", err), http.StatusInternalServerError)
 		return

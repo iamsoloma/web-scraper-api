@@ -8,16 +8,19 @@ import (
 
 type Config struct {
 	ListenAddr string
+	UserAgent  string
 }
 
 type Server struct {
 	*Config
 	Started time.Time
+	Version string
 }
 
-func NewServer(config Config) (*Server, error) {
+func NewServer(config Config, version string) (*Server, error) {
 	return &Server{
-		Config: &config,
+		Config:  &config,
+		Version: version,
 	}, nil
 }
 

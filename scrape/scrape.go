@@ -19,17 +19,34 @@ import (
 	"github.com/firecrawl/html-to-markdown/plugin"
 )
 
-func Scrape(req ScrapeRequest) (resp ScraperResponse, err error) {
+func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err error) {
 	requrl, err := url.Parse(req.URL)
 	if err != nil {
 		return resp, errors.New("URL parse: " + err.Error())
 	}
+
+	robotsParser, err := utils.NewRobotsParser(req.URL)
+	if err != nil {
+		return resp, errors.New("Robots parser: " + err.Error())
+	}
+
+	err = robotsParser.Fetch()
+	if err != nil {
+		return resp, errors.New("Robots fetch: " + err.Error())
+	}
+	allowed := robotsParser.IsAllowed(userAgent, requrl.Path)
+	if !allowed {
+		return resp, errors.New("Scraping disallowed by robots.txt")
+	}
+
 	// Создаем контекст chromedp с опциями для Docker
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("disable-dev-shm-usage", true),
+		chromedp.UserAgent(userAgent),
+		//chromedp.UserDataDir("./data"),
 	)
 
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
