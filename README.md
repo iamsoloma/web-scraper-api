@@ -5,6 +5,7 @@ Web Scraper API на Golang с использованием chromedp для из
 ## Описание
 
 Этот API позволяет извлекать информацию с веб-страниц, включая:
+
 - Название страницы
 - Скриншот страницы
 - Текст страницы
@@ -28,6 +29,7 @@ Web Scraper API на Golang с использованием chromedp для из
 ## Запуск
 
 ### Локальный запуск
+
 ```
 go run main.go
 ```
@@ -35,6 +37,7 @@ go run main.go
 Сервер будет доступен по адресу `http://localhost:8080`
 
 ### Запуск через Docker
+
 ```
 docker build -t web-scraper-api .
 docker run -p 8080:8080 web-scraper-api
@@ -42,20 +45,41 @@ docker run -p 8080:8080 web-scraper-api
 
 ## Использование
 
-Отправьте GET запрос к эндпоинту `/scrape` с параметром `url`:
+Отправьте GET запрос к эндпоинту `/scrape`:
 
-```
-curl "http://localhost:8080/scrape?url=https://example.com"
+```json
+curl -X GET \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "screenshot": true,
+    "html": true,
+    "markdown": true,
+    "text": true,
+    "images": true,
+    "links": true
+  }' \
+  http://localhost:8080/scrape
 ```
 
 Ответ будет в формате JSON:
+
 ```json
 {
   "title": "Название страницы",
   "screenshot": "base64-encoded-screenshot",
+  "html": "HTML страницы",
+  "markdown": "Markdown страницы",
   "text": "Текст страницы",
-  "images": ["ссылка1", "ссылка2", ...],
-  "links": ["ссылка1", "ссылка2", ...]
+  "images": {
+    "подпись": "ссылка",
+    "подпись": "ссылка"
+  },
+  "links": {
+    "подпись": "ссылка",
+    "подпись": "ссылка"
+  },
+  "date":"Дата обращения в UTC"
 }
 ```
 
