@@ -5,6 +5,7 @@ go 1.25
 require (
 	github.com/chromedp/chromedp v0.14.2
 	github.com/firecrawl/html-to-markdown v0.0.0-20250922154302-32a7ad4a22c3
+	github.com/lib/pq v1.10.9
 	golang.org/x/net v0.38.0
 )
 
