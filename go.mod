@@ -5,6 +5,7 @@ go 1.25
 require (
 	github.com/chromedp/chromedp v0.14.2
 	github.com/firecrawl/html-to-markdown v0.0.0-20250922154302-32a7ad4a22c3
+	golang.org/x/net v0.38.0
 )
 
 require (
@@ -16,7 +17,8 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	golang.org/x/sys v0.37.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

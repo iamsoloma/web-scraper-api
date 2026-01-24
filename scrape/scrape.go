@@ -25,20 +25,6 @@ func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err erro
 		return resp, errors.New("URL parse: " + err.Error())
 	}
 
-	robotsParser, err := utils.NewRobotsParser(req.URL)
-	if err != nil {
-		return resp, errors.New("Robots parser: " + err.Error())
-	}
-
-	err = robotsParser.Fetch()
-	if err != nil {
-		return resp, errors.New("Robots fetch: " + err.Error())
-	}
-	allowed := robotsParser.IsAllowed(userAgent, requrl.Path)
-	if !allowed {
-		return resp, errors.New("Scraping disallowed by robots.txt")
-	}
-
 	// Создаем контекст chromedp с опциями для Docker
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
@@ -56,19 +42,13 @@ func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err erro
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	// Устанавливаем таймаут
-	//ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
-	//defer cancel()
-
 	var Actions []chromedp.Action
 	Actions = append(Actions,
 		chromedp.Navigate(req.URL),
 		chromedp.WaitVisible("body", chromedp.ByQuery),
 		chromedp.Title(&resp.Title),
+		chromedp.OuterHTML("html", &resp.HTML, chromedp.ByQueryAll),
 	)
-	if req.HTML {
-		Actions = append(Actions, chromedp.OuterHTML("html", &resp.HTML, chromedp.ByQueryAll))
-	}
 	if req.Images {
 		Actions = append(Actions, chromedp.EvaluateAsDevTools(`Array.from(document.querySelectorAll('img')).reduce((m, img) => {
 			try {
@@ -121,7 +101,7 @@ func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err erro
 		resp.Screenshot = base64.StdEncoding.EncodeToString(screenshot)
 	}
 
-	if req.Markdown == true {
+	if req.Markdown {
 		// Очищаем HTML от скриптов и потенциального inline-JS
 		sanitizedHTML := utils.SanitizeHTML(resp.HTML)
 
@@ -132,6 +112,10 @@ func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err erro
 			return resp, errors.New("Markdown conversion: " + err.Error())
 		}
 		resp.Markdown = markdown
+	}
+
+	if !req.HTML {
+		resp.HTML = ""
 	}
 
 	resp.Date = time.Now().UTC()
