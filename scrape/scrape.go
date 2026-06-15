@@ -93,11 +93,16 @@ func Scrape(req ScrapeRequest, userAgent string) (resp ScraperResponse, err erro
 	}
 
 	if req.Screenshot == true {
+		var screenshot []byte
+		if err := chromedp.Run(ctx, chromedp.FullScreenshot(&screenshot, 100)); err != nil {
+			return resp, errors.New("Screenshot: " + err.Error())
+		}
+
 		// Попытка корректно сделать скриншот длинной страницы: делаем серию скриншотов видимой области и склеиваем
-		screenshot, err := captureFullPageScreenshot(ctx)
+		/*screenshot, err := captureFullPageScreenshot(ctx)
 		if err != nil {
 			return resp, errors.New("Screenshot Error: " + err.Error())
-		}
+		}*/
 		resp.Screenshot = base64.StdEncoding.EncodeToString(screenshot)
 	}
 
