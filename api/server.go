@@ -44,5 +44,4 @@ func (s *Server) Start() {
 	if err != nil {
 		slog.Error("API stoped", "error", err)
 	}
-
 }

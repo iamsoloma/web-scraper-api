@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"web-scraper-api/scrape"
-	"web-scraper-api/utils"
 )
 
 func (s *Server) Scrape(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +23,7 @@ func (s *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	robotsParser, err := utils.NewRobotsParser(scrapeReq.URL)
+	robotsParser, err := scrape.NewRobotsParser(scrapeReq.URL)
 	if err != nil {
 		http.Error(w, errors.New("Robots parser: " + err.Error()).Error(), http.StatusInternalServerError)
 		return 
