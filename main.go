@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"web-scraper-api/api"
+	"web-scraper-api/config"
 )
 
 func main() {
@@ -17,10 +18,9 @@ func main() {
 		userAgent = "OpinionBot"
 	}
 
-	server, err := api.NewServer(api.Config{
-		ListenAddr: "0.0.0.0:" + port,
-		UserAgent:  userAgent,
-	}, "0.0.6")
+	config := config.MustLoadConf()
+
+	server, err := api.NewServer(config, "0.0.6")
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}

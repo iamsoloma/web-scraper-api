@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    task VARCHAR(255) NOT NULL,
+    payload JSONB NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    priority INT NOT NULL DEFAULT 0,
+    attempts INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_attempt_at TIMESTAMP WITH TIME ZONE,
+    result JSONB
+);

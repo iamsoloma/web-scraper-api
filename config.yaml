@@ -1,0 +1,8 @@
+listenAddr: "0.0.0.0:8080"
+userAgent: "OpinionBot"
+database:
+  host: "localhost"
+  port: 5432
+  user: "main"
+  password: "qwerty"
+  dbname: "tasks"
