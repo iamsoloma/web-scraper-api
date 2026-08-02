@@ -4,20 +4,8 @@ info:
   seq: 3
 
 http:
-  method: POST
-  url: http://localhost:8080/scrape
-  body:
-    type: json
-    data: |-
-      {
-          "url":  "https://ru.wikipedia.org/wiki/Все_вы_зомби",
-          "screenshot": false,
-          "html": false,
-          "markdown": false,
-          "text": true,
-          "images": true,
-          "links": true
-        }
+  method: GET
+  url: http://localhost:8080/scrape/1
   auth: inherit
 
 settings:

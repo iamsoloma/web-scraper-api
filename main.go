@@ -20,7 +20,7 @@ func main() {
 
 	config := config.MustLoadConf()
 
-	server, err := api.NewServer(config, "0.0.6")
+	server, err := api.NewServer(config, "0.0.7")
 	if err != nil {
 		log.Fatalf("Failed to create server: %v", err)
 	}
