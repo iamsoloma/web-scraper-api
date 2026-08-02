@@ -13,6 +13,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type CreateTaskResponse struct {
+	ID int `json:"taskID"`
+}
+
 type Queue struct {
 	pool *pgxpool.Pool
 }

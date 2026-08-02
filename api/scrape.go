@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"web-scraper-api/queue"
 	"web-scraper-api/scrape"
 )
 
@@ -30,12 +31,11 @@ func (s *Server) Scrape(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(map[string]interface{}{"id": id})
+	err = json.NewEncoder(w).Encode(queue.CreateTaskResponse{ID: id})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("JSON: %v", err), http.StatusInternalServerError)
 		return
 	}
-
 }
 
 func (s *Server) Scraper(payload []byte) (result []byte, err error) {
