@@ -1,6 +1,6 @@
 services:
   scraper:
-    image: ghcr.io/iamsoloma/web-scraper-api:0.0.8
+    image: ghcr.io/iamsoloma/web-scrape-api:0.0.8
     build: .
     networks:
       - scraper-network
