@@ -26,7 +26,9 @@ func NewStorage(config config.Storage) *Storage {
 		}, nil
 	})
 
-	client := s3.NewFromConfig(*cfg)
+	client := s3.NewFromConfig(*cfg, func(options *s3.Options) {
+		options.UsePathStyle = true
+	})
 	return &Storage{Config: config, client: client}
 }
 

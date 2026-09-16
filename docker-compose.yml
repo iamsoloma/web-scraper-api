@@ -1,4 +1,15 @@
 services:
+  scraper:
+    image: ghcr.io/iamsoloma/web-scraper-api:0.0.8
+    build: .
+    networks:
+      - scraper-network
+    volumes:
+       - ./config.yaml:/usr/bin/config.yaml:ro
+    ports:
+      - "8080:8080"
+
+      
   postgres:
     image: postgres:18
     environment:
@@ -6,6 +17,8 @@ services:
       POSTGRES_USER: "main"
       POSTGRES_PASSWORD: "qwerty"
       PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+      - scraper-network
     volumes:
       - pgdata:/var/lib/postgresql/data/pgdata
     ports:
@@ -17,6 +30,8 @@ services:
       AWS_ACCESS_KEY_ID: "main"
       AWS_SECRET_ACCESS_KEY: "qwerty"
       S3_BUCKET: "tasks"
+    networks:
+      - scraper-network
     volumes:
       - storagedata:/data
     ports:
@@ -27,3 +42,8 @@ services:
 volumes:
   pgdata:
   storagedata:
+
+networks:
+  scraper-network:
+    driver: bridge
+

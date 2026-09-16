@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS builder
+FROM golang:1.27.1-alpine3.24 AS builder
 
 WORKDIR /build
 
@@ -7,7 +7,7 @@ COPY . .
 RUN go build -o /build/main
 
 
-FROM alpine:3.22.2
+FROM alpine:3.24.1
 
 RUN apk add --no-cache chromium
 

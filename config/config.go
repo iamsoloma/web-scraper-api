@@ -1,6 +1,10 @@
 package config
 
-import "github.com/ilyakaznacheev/cleanenv"
+import (
+	"fmt"
+
+	"github.com/ilyakaznacheev/cleanenv"
+)
 
 type Config struct {
 	ListenAddr string   `yaml:"listenAddr" env-default:"0.0.0.0:8080"`
@@ -29,7 +33,8 @@ func MustLoadConf() Config {
 	var config Config
 
 	if err := cleanenv.ReadConfig("./config.yaml", &config); err != nil {
-		panic(err)
+		fmt.Println()
+		fmt.Printf("Can`t read a config file!\n%s\n", err.Error())
 	}
 	return config
 }
