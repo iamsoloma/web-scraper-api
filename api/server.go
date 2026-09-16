@@ -7,6 +7,7 @@ import (
 	"time"
 	"web-scraper-api/config"
 	"web-scraper-api/queue"
+	"web-scraper-api/storage"
 )
 
 type Server struct {
@@ -14,6 +15,7 @@ type Server struct {
 	Started time.Time
 	Version string
 	Queue   *queue.Queue
+	Storage *storage.Storage
 }
 
 func NewServer(config config.Config, version string) (*Server, error) {
@@ -26,10 +28,14 @@ func NewServer(config config.Config, version string) (*Server, error) {
 	if err != nil {
 		return nil, errors.New("can`t create task table")
 	}
+
+	storage := storage.NewStorage(config.Storage)
+
 	return &Server{
 		Config:  &config,
 		Version: version,
 		Queue:   queue,
+		Storage: storage,
 	}, nil
 }
 
@@ -49,7 +55,7 @@ func (s *Server) Start() {
 
 	s.Started = time.Now().UTC()
 
-	go s.Queue.HandleFunc("scrape", s.Scraper)
+	go s.Queue.HandleFunc("scrape", s.Scraper, s.Storage)
 
 	slog.Info("api is running", "address", s.Config.ListenAddr)
 	err := server.ListenAndServe()

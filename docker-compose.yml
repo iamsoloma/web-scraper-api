@@ -11,5 +11,19 @@ services:
     ports:
       - "5432:5432"
 
+  seaweedfs:
+    image: chrislusf/seaweedfs
+    environment:
+      AWS_ACCESS_KEY_ID: "main"
+      AWS_SECRET_ACCESS_KEY: "qwerty"
+      S3_BUCKET: "tasks"
+    volumes:
+      - storagedata:/data
+    ports:
+      - "8333:8333"
+      - "23646:23646"
+
+
 volumes:
   pgdata:
+  storagedata:

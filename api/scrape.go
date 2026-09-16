@@ -88,6 +88,13 @@ func (s *Server) ScrapeResult(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Task not found", http.StatusNotFound)
 		return
 	}
+	if task.Status == "done" {
+		task.Result, err = s.Storage.GetObject(task.ResultKey)
+		if err != nil {
+			http.Error(w, "Result not found", http.StatusInternalServerError)
+			return
+		}
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(task)

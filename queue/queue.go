@@ -21,6 +21,10 @@ type Queue struct {
 	pool *pgxpool.Pool
 }
 
+type ResultStorage interface {
+	PutObject(key string, data []byte) error
+}
+
 type Task struct {
 	ID            int             `json:"id"`
 	Task          string          `json:"task"`
@@ -31,6 +35,7 @@ type Task struct {
 	CreatedAt     time.Time       `json:"created_at"`
 	LastAttemptAt time.Time       `json:"last_attempt_at"`
 	Result        json.RawMessage `json:"result"`
+	ResultKey     string          `json:"-"`
 }
 
 func NewPostgressConnect(config config.Database) (*Queue, error) {
@@ -63,9 +68,13 @@ func (q *Queue) CreateTaskTable() error {
     		attempts INT NOT NULL DEFAULT 0,
     		created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     		last_attempt_at TIMESTAMP WITH TIME ZONE,
-			result JSONB
+			result_key VARCHAR(255)
 		);
 	`)
+	if err != nil {
+		return err
+	}
+
 	return err
 }
 
@@ -84,17 +93,17 @@ func (q *Queue) CreateTask(task string, payload []byte, priority int) (id int, e
 func (q *Queue) GetTask(id int) (task *Task, err error) {
 	task = &Task{}
 	err = q.pool.QueryRow(context.Background(), `
-		SELECT id, task, payload, status, priority, attempts, created_at, last_attempt_at, result
+		SELECT id, task, payload, status, priority, attempts, created_at, last_attempt_at, COALESCE(result_key, '')
 		FROM tasks
 		WHERE id = $1;
-	`, id).Scan(&task.ID, &task.Task, &task.Payload, &task.Status, &task.Priority, &task.Attempts, &task.CreatedAt, &task.LastAttemptAt, &task.Result)
+	`, id).Scan(&task.ID, &task.Task, &task.Payload, &task.Status, &task.Priority, &task.Attempts, &task.CreatedAt, &task.LastAttemptAt, &task.ResultKey)
 	if err != nil {
 		return nil, err
 	}
 	return task, nil
 }
 
-func (q *Queue) HandleFunc(task string, handler func(payload []byte) (result []byte, err error)) {
+func (q *Queue) HandleFunc(task string, handler func(payload []byte) (result []byte, err error), resultStorage ResultStorage) {
 	for {
 		ctx := context.Background()
 		tx, err := q.pool.Begin(ctx)
@@ -150,7 +159,14 @@ func (q *Queue) HandleFunc(task string, handler func(payload []byte) (result []b
 				log.Println(err)
 			}
 		} else {
-			_, err = q.pool.Exec(ctx, "UPDATE tasks SET status = 'done', result = $2 WHERE id = $1", id, result)
+			resultKey := fmt.Sprintf("results/%d.json", id)
+			err = resultStorage.PutObject(resultKey, result)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			_, err = q.pool.Exec(ctx, "UPDATE tasks SET status = 'done', result_key = $2 WHERE id = $1", id, resultKey)
 			if err != nil {
 				log.Println(err)
 			}

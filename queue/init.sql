@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS tasks (
     attempts INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_attempt_at TIMESTAMP WITH TIME ZONE,
-    result JSONB
+    result_key VARCHAR(255)
 );
