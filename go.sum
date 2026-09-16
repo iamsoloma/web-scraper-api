@@ -18,6 +18,8 @@ github.com/firecrawl/html-to-markdown v0.0.0-20250922154302-32a7ad4a22c3 h1:lzHI
 github.com/firecrawl/html-to-markdown v0.0.0-20250922154302-32a7ad4a22c3/go.mod h1:jngam+MdNp7FZkhSTlFsuA5hXY21X0+vuiGlpgo2n5o=
 github.com/go-json-experiment/json v0.0.0-20251024212118-8a0206d3c796 h1:GeGdEsbIgwxgT1MtbU6xmm8bJRJFGypRWIYj7RZgfH0=
 github.com/go-json-experiment/json v0.0.0-20251024212118-8a0206d3c796/go.mod h1:uNVvRXArCGbZ508SxYYTC5v1JWoz2voff5pm25jU1Ok=
+github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3 h1:UADEEmDKgfXbtnGJZ97beY5XLo9ZechG1nlU4KnRrkE=
+github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3/go.mod h1:tphK2c80bpPhMOI4v6bIc2xWywPfbqi1Z06+RcrMkDg=
 github.com/gobwas/httphead v0.1.0 h1:exrUm0f4YX0L7EBwZHuCF4GDp8aJfVeBrlLQrs6NqWU=
 github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
 github.com/gobwas/pool v0.2.1 h1:xfeeEhW7pwmX8nuLVlqbzVc7udMDrwetjEv+TZIz1og=
