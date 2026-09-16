@@ -105,7 +105,7 @@ curl http://localhost:8080/health
   "Status": "Ok",
   "CurrentTime": "...",
   "Uptime": "...",
-  "Version": "0.0.7",
+  "Version": "0.0.8",
   "UserAgent": "OpinionBot"
 }
 ```
