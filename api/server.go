@@ -21,12 +21,12 @@ type Server struct {
 func NewServer(config config.Config, version string) (*Server, error) {
 	queue, err := queue.NewPostgressConnect(config.Database)
 	if err != nil {
-		return nil, errors.New("can`t connect to postgres")
+		return nil, errors.New("can`t connect to postgres: " + err.Error())
 	}
 
 	err = queue.CreateTaskTable()
 	if err != nil {
-		return nil, errors.New("can`t create task table")
+		return nil, errors.New("can`t create task table: " + err.Error())
 	}
 
 	storage := storage.NewStorage(config.Storage)

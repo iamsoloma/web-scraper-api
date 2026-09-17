@@ -142,11 +142,10 @@ func (q *Queue) HandleFunc(task string, handler func(payload []byte) (result []b
 		var task scrape.ScrapeRequest
 		err = json.Unmarshal(payloadBytes, &task)
 		// Process the task here, e.g., send email based on payload["action"]
-		if err != nil {
-			_, err = q.pool.Exec(ctx, "UPDATE tasks SET status = 'failed' WHERE id = $1", id)
-		}
-
 		result, err := handler(payloadBytes)
+		/*if err != nil {
+			_, err = q.pool.Exec(ctx, "UPDATE tasks SET status = 'failed' WHERE id = $1", id)
+		}*/
 
 		if err != nil {
 			attempts := 1      // Fetch actual attempts from query

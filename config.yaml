@@ -1,14 +1,14 @@
 listenAddr: "0.0.0.0:8080"
 userAgent: "OpinionBot"
 database:
-  domain: "postgres"
+  domain: "0.0.0.0"
   port: "5432"
   user: "main"
   password: "qwerty"
   dbname: "tasks"
 storage:
   bucket: "tasks"
-  endpoint: "http://seaweedfs:8333"
+  endpoint: "http://0.0.0.0:8333"
   region: "us-east-1"
   AccessKeyID: "main"
   SecretAccessKey: "qwerty"
